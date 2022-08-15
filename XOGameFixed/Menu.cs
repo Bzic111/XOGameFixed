@@ -5,7 +5,6 @@ namespace MenuSpace;
 
 public class Menu
 {
-    public delegate void Cycler(Dictionary<string, Runner> Dict);
     public delegate void Runner();
 
     /// <summary>
@@ -154,6 +153,4 @@ public class Menu
         for (int i = 0; i < str.Length; i++)
             Console.WriteLine(str[i]);
     }
-
-
 }

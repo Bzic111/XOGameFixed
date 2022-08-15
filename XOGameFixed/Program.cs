@@ -7,6 +7,6 @@ using MenuSpace;
 Menu mainMenu = new Menu();
 Work[] works = new Work[]
 {
-                new HomeWork()
+    new HomeWork()
 };
 mainMenu.MainMenu(works, "Homework");

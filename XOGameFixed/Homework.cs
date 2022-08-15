@@ -82,7 +82,7 @@ public class HomeWork : MenuSpace.Work
     /// </summary>
     /// <returns></returns>
     public override MenuSpace.Menu.Runner[] GetRunners() => AllRuns;
-    
+
     /// <summary>
     /// Создание объекта игры
     /// </summary>
