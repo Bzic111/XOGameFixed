@@ -6,6 +6,34 @@ namespace Game;
 
 public class HomeWork : MenuSpace.Work
 {
+    #region Specs
+
+    /// <summary>
+    /// Действия меню
+    /// </summary>
+    public new MenuSpace.Menu.Runner[] AllRuns { get; }
+    
+    /// <summary>
+    /// Строки меню
+    /// </summary>
+    string[] Names { get; } = { "Один игрок", "Два игрока", "Установить размер поля", "Установить рамер выигрышной строки" };
+    
+    /// <summary>
+    /// Получить список названий строк меню
+    /// </summary>
+    /// <returns></returns>
+    public override string[] GetNames() => this.Names;
+    
+    /// <summary>
+    /// Получить список действий меню
+    /// </summary>
+    /// <returns></returns>
+    public override MenuSpace.Menu.Runner[] GetRunners() => AllRuns;
+    
+    #endregion
+
+    #region Enums
+
     /// <summary>
     /// Статус игры
     /// </summary>
@@ -26,6 +54,10 @@ public class HomeWork : MenuSpace.Work
     {
         White,Black,Green,Yellow,Red,Grey
     }
+
+    #endregion
+
+    #region Properties
 
     /// <summary>
     /// Длина серии для победы
@@ -62,32 +94,14 @@ public class HomeWork : MenuSpace.Work
     /// </summary>
     int[,] IntField;
 
-    /// <summary>
-    /// Действия меню
-    /// </summary>
-    public new MenuSpace.Menu.Runner[] AllRuns { get; }
-    
-    /// <summary>
-    /// Строки меню
-    /// </summary>
-    string[] Names { get; } = { "Один игрок", "Два игрока", "Установить размер поля", "Установить рамер выигрышной строки" };
-    
-    /// <summary>
-    /// Получить список названий строк меню
-    /// </summary>
-    /// <returns></returns>
-    public override string[] GetNames() => this.Names;
-    
-    /// <summary>
-    /// Получить список действий меню
-    /// </summary>
-    /// <returns></returns>
-    public override MenuSpace.Menu.Runner[] GetRunners() => AllRuns;
+    #endregion
 
     /// <summary>
     /// Создание объекта игры
     /// </summary>
     public HomeWork() => AllRuns = new MenuSpace.Menu.Runner[] { PlayOne, PlayTwo, SetSize, SetWinSerie };
+
+    #region Runners
 
     /// <summary>
     /// Игра с компьютером
@@ -177,6 +191,10 @@ public class HomeWork : MenuSpace.Work
         Console.Clear();
     }
 
+    #endregion
+
+    #region Init
+
     /// <summary>
     /// Подготовка к началу игры
     /// </summary>
@@ -213,34 +231,6 @@ public class HomeWork : MenuSpace.Work
         PrintGreen($"Линия для победы должна быть {WinSerie}".PadRight(SizeX * 2 + 1), 0, SizeY * 2 + 3);
         Console.SetCursorPosition(1, 1);
     }
-
-    /// <summary>
-    /// Проверка хода. Устанавливает статус игры
-    /// </summary>
-    /// <param name="PlayerChar">Символ игрока</param>
-    /// <param name="player">Имя игрока</param>
-    /// <param name="last">Последние координаты</param>
-    /// <param name="field">Поле для проверки</param>
-    /// <param name="moveCounter">Счётчик действий</param>
-    /// <returns>true - Игра завершается. false - игра продолжается</returns>
-    bool TurnCheck(in char PlayerChar, string player, in int[] last, ref int[,] field, ref int moveCounter)
-    {
-        if (WinCheck(PlayerChar, last, Field, ref field))
-        {
-            Status = GameStatus.Win;
-            EndGame(GameStatus.Win, player);
-            return true;
-        }
-        moveCounter--;
-        if (moveCounter == 0)
-        {
-            Status = GameStatus.Draw;
-            return true;
-        }
-        if (Status == GameStatus.Break)
-            return true;
-        return false;
-    }
     
     /// <summary>
     /// Создание нового игрового поля
@@ -276,6 +266,38 @@ public class HomeWork : MenuSpace.Work
                 field[i, j] = 0;
     }
 
+    #endregion
+
+    #region Mechanics
+
+    /// <summary>
+    /// Проверка хода. Устанавливает статус игры
+    /// </summary>
+    /// <param name="PlayerChar">Символ игрока</param>
+    /// <param name="player">Имя игрока</param>
+    /// <param name="last">Последние координаты</param>
+    /// <param name="field">Поле для проверки</param>
+    /// <param name="moveCounter">Счётчик действий</param>
+    /// <returns>true - Игра завершается. false - игра продолжается</returns>
+    bool TurnCheck(in char PlayerChar, string player, in int[] last, ref int[,] field, ref int moveCounter)
+    {
+        if (WinCheck(PlayerChar, last, Field, ref field))
+        {
+            Status = GameStatus.Win;
+            EndGame(GameStatus.Win, player);
+            return true;
+        }
+        moveCounter--;
+        if (moveCounter == 0)
+        {
+            Status = GameStatus.Draw;
+            return true;
+        }
+        if (Status == GameStatus.Break)
+            return true;
+        return false;
+    }
+    
     /// <summary>
     /// Управление с клавиатуры
     /// </summary>
@@ -335,6 +357,187 @@ public class HomeWork : MenuSpace.Work
         PrintWhite(chr[Y, X], Y, X);
         } while (key.Key != ConsoleKey.Enter & key.Key != ConsoleKey.Escape);
     }
+    
+    /// <summary>
+    /// Выход из игры
+    /// </summary>
+    void ExitGame()
+    {
+        Console.Clear();
+        Console.WriteLine("Press Any Key to return in Menu.");
+        //Status = GameStatus.Exit;
+    }
+    
+    /// <summary>
+    /// Финал игры
+    /// </summary>
+    /// <param name="type">Статус игры к финалу</param>
+    /// <param name="player">имя игрока</param>
+    /// <returns></returns>
+    bool EndGame(GameStatus type, string player)
+    {
+        Console.SetCursorPosition((Console.WindowWidth / 2)-20, Console.WindowHeight / 2);
+        switch (type)
+        {
+            case GameStatus.Win:
+                Color(SetColor.Yellow);
+                Console.WriteLine($"Congratulation!!! Player {player} WIN!!!");
+                goto default;
+            case GameStatus.Draw:
+                Color(SetColor.Grey);
+                Console.WriteLine("It is DRAW.");
+                goto default;
+            case GameStatus.Break:
+                Color(SetColor.Red);
+                Console.WriteLine("Exit game without ending, progress not saved.");
+                goto default;
+            default:
+                DropColor();
+                Console.ReadKey(false);
+                ExitGame();
+                break;
+        }
+        return false;
+    }
+    
+    /// <summary>
+    /// Проверка на выход за пределы игрового поля
+    /// </summary>
+    /// <param name="Y">Текущая координата Y</param>
+    /// <param name="X">Текущая координата Х</param>
+    /// <param name="arr">Поле</param>
+    /// <returns>true - координаты в пределах поля, false - выход за пределы поля</returns>
+    bool InRange(int Y, int X, char[,] arr) => (Y >= 0 & Y < arr.GetLength(0)) & (X >= 0 & X < arr.GetLength(1));
+    
+    /// <summary>
+    /// Проверка на выход за пределы игрового поля для выигрышной серии
+    /// </summary>
+    /// <param name="fieldX">Координата Х</param>
+    /// <param name="fieldY">Координата Y</param>
+    /// <param name="field">Поле</param>
+    /// <param name="counter">Счётчик</param>
+    /// <param name="playerChar">Символ игрока</param>
+    /// <returns>true - собрана выигрышная серия, false - все проверки прошли и серия не набрана</returns>
+    bool CheckInRange(in int fieldX, in int fieldY, in char[,] field, ref int counter, in char playerChar)
+    {
+        if (InRange(fieldX, fieldY, field))
+            if (field[fieldX, fieldY] == playerChar)
+            {
+                counter++;
+                if (counter == WinSerie)
+                    return true;
+            }
+            else if (field[fieldX, fieldY] != playerChar)
+            {
+                counter = 0;
+            }
+        return false;
+    }
+
+    /// <summary>
+    /// Проверка диагонали А проходящей через точку отсчёта
+    /// </summary>
+    /// <param name="playerChar">Символ игрока</param>
+    /// <param name="lastDot">Точка отсчёта</param>
+    /// <param name="field">Поле</param>
+    /// <param name="intField">Скрытое поле</param>
+    /// <returns>true - собрана выигрышная серия, false - все проверки прошли и серия не набрана</returns>
+    bool CheckDiagonalUp(char playerChar, int[] lastDot, char[,] field, ref int[,] intField)
+    {
+        int Xmin = lastDot[1] - WinSerie;
+        int Xmax = lastDot[1] + WinSerie;
+        int Ymin = lastDot[0] - WinSerie;
+        int Ymax = lastDot[0] + WinSerie;
+        int counter = 0;
+        for (int i = Ymax, j = Xmin; (i >= Ymin) & (j <= Xmax); i--, j++)
+            if (CheckInRange(in i, in j, field, ref counter, playerChar))
+                return true;
+
+        return false;
+    }
+
+    /// <summary>
+    /// Проверка диагонали Б проходящей через точку отсчёта
+    /// </summary>
+    /// <param name="playerChar">Символ игрока</param>
+    /// <param name="lastDot">Точка отсчёта</param>
+    /// <param name="field">Поле</param>
+    /// <param name="intField">Скрытое поле</param>
+    /// <returns>true - собрана выигрышная серия, false - все проверки прошли и серия не набрана</returns>
+    bool CheckDiagonalDown(char playerChar, int[] lastDot, char[,] field, ref int[,] intField)
+    {
+        int Xmin = lastDot[1] - WinSerie;
+        int Xmax = lastDot[1] + WinSerie;
+        int Ymin = lastDot[0] - WinSerie;
+        int Ymax = lastDot[0] + WinSerie;
+        int counter = 0;
+        for (int i = Ymin, j = Xmin; (i <= Ymax) & (j <= Xmax); i++, j++)
+            if (CheckInRange(in i, in j, in field, ref counter, playerChar))
+                return true;
+
+        return false;
+    }
+
+    /// <summary>
+    /// Проверка горизонтали проходящей через точку отсчёта
+    /// </summary>
+    /// <param name="playerChar">Символ игрока</param>
+    /// <param name="lastDot">Точка отсчёта</param>
+    /// <param name="field">Поле</param>
+    /// <param name="intField">Скрытое поле</param>
+    /// <returns>true - собрана выигрышная серия, false - все проверки прошли и серия не набрана</returns>
+    bool CheckHorizontal(char playerChar, int[] lastDot, char[,] field, ref int[,] intField)
+    {
+        int Xmin = lastDot[1] - WinSerie;
+        int Xmax = lastDot[1] + WinSerie;
+        int counter = 0;
+        for (int i = Xmin; i <= Xmax; i++)
+            if (CheckInRange(in lastDot[0], in i, field, ref counter, playerChar))
+                return true;
+
+        return false;
+    }
+
+    /// <summary>
+    /// Проверка вертикали проходящей через точку отсчёта
+    /// </summary>
+    /// <param name="playerChar">Символ игрока</param>
+    /// <param name="lastDot">Точка отсчёта</param>
+    /// <param name="field">Поле</param>
+    /// <param name="intField">Скрытое поле</param>
+    /// <returns>true - собрана выигрышная серия, false - все проверки прошли и серия не набрана</returns>
+    bool CheckVertical(char playerChar, int[] lastDot, char[,] field, ref int[,] intField)
+    {
+        int Ymin = lastDot[0] - WinSerie;
+        int Ymax = lastDot[0] + WinSerie;
+        int counter = 0;
+        for (int i = Ymin; i <= Ymax; i++)
+            if (CheckInRange(in i, in lastDot[1], field, ref counter, playerChar))
+                return true;
+
+        return false;
+    }
+
+    /// <summary>
+    /// Проверка выигрышной серии.
+    /// </summary>
+    /// <param name="playerChar">Символ игрока</param>
+    /// <param name="lastDot">Координаты точки отсчёта</param>
+    /// <param name="field">Поле</param>
+    /// <param name="intField">Скрытое поле</param>
+    /// <returns>true - собрана выигрышная серия, false - все проверки прошли и серия не набрана</returns>
+    bool WinCheck(char playerChar, int[] lastDot, char[,] field, ref int[,] intField)
+    {
+        bool ver = CheckVertical(playerChar, lastDot, field, ref intField);
+        bool hor = CheckHorizontal(playerChar, lastDot, field, ref intField);
+        bool up = CheckDiagonalUp(playerChar, lastDot, field, ref intField);
+        bool dn = CheckDiagonalDown(playerChar, lastDot, field, ref intField);
+        return ver | hor | up | dn;
+    }
+
+    #endregion
+    
+    #region View
 
     /// <summary>
     /// Вывод символа на консоль с заданным цветом - Чёрный текст, белый фон
@@ -475,48 +678,6 @@ public class HomeWork : MenuSpace.Work
     }
     
     /// <summary>
-    /// Выход из игры
-    /// </summary>
-    void ExitGame()
-    {
-        Console.Clear();
-        Console.WriteLine("Press Any Key to return in Menu.");
-        //Status = GameStatus.Exit;
-    }
-    
-    /// <summary>
-    /// Финал игры
-    /// </summary>
-    /// <param name="type">Статус игры к финалу</param>
-    /// <param name="player">имя игрока</param>
-    /// <returns></returns>
-    bool EndGame(GameStatus type, string player)
-    {
-        Console.SetCursorPosition((Console.WindowWidth / 2)-20, Console.WindowHeight / 2);
-        switch (type)
-        {
-            case GameStatus.Win:
-                Color(SetColor.Yellow);
-                Console.WriteLine($"Congratulation!!! Player {player} WIN!!!");
-                goto default;
-            case GameStatus.Draw:
-                Color(SetColor.Grey);
-                Console.WriteLine("It is DRAW.");
-                goto default;
-            case GameStatus.Break:
-                Color(SetColor.Red);
-                Console.WriteLine("Exit game without ending, progress not saved.");
-                goto default;
-            default:
-                DropColor();
-                Console.ReadKey(false);
-                ExitGame();
-                break;
-        }
-        return false;
-    }
-    
-    /// <summary>
     /// Установка символа игрока
     /// </summary>
     /// <param name="Y">Координата Y</param>
@@ -531,6 +692,10 @@ public class HomeWork : MenuSpace.Work
         SecondField[Y, X] = -1;
         Field[Y, X] = playerDot;
     }
+
+    #endregion
+
+    #region AI
 
     /// <summary>
     /// Ход ИИ
@@ -639,15 +804,6 @@ public class HomeWork : MenuSpace.Work
                 }
     }
 
-    /// <summary>
-    /// Проверка на выход за пределы игрового поля
-    /// </summary>
-    /// <param name="Y">Текущая координата Y</param>
-    /// <param name="X">Текущая координата Х</param>
-    /// <param name="arr">Поле</param>
-    /// <returns>true - координаты в пределах поля, false - выход за пределы поля</returns>
-    bool InRange(int Y, int X, char[,] arr) => (Y >= 0 & Y < arr.GetLength(0)) & (X >= 0 & X < arr.GetLength(1));
-    
     /// <summary>
     /// Получить максимальный вес клетки в массиве внутри поля, начинающегося в точке <paramref name="Dot"/> и идущего по направлению Вверх, с максимальной длинной равной выигрышной серии.
     /// </summary>
@@ -905,129 +1061,5 @@ public class HomeWork : MenuSpace.Work
         return result;
     }
 
-    /// <summary>
-    /// Проверка на выход за пределы игрового поля для выигрышной серии
-    /// </summary>
-    /// <param name="fieldX">Координата Х</param>
-    /// <param name="fieldY">Координата Y</param>
-    /// <param name="field">Поле</param>
-    /// <param name="counter">Счётчик</param>
-    /// <param name="playerChar">Символ игрока</param>
-    /// <returns>true - собрана выигрышная серия, false - все проверки прошли и серия не набрана</returns>
-    bool CheckInRange(in int fieldX, in int fieldY, in char[,] field, ref int counter, in char playerChar)
-    {
-        if (InRange(fieldX, fieldY, field))
-            if (field[fieldX, fieldY] == playerChar)
-            {
-                counter++;
-                if (counter == WinSerie)
-                    return true;
-            }
-            else if (field[fieldX, fieldY] != playerChar)
-            {
-                counter = 0;
-            }
-        return false;
-    }
-
-    /// <summary>
-    /// Проверка диагонали А проходящей через точку отсчёта
-    /// </summary>
-    /// <param name="playerChar">Символ игрока</param>
-    /// <param name="lastDot">Точка отсчёта</param>
-    /// <param name="field">Поле</param>
-    /// <param name="intField">Скрытое поле</param>
-    /// <returns>true - собрана выигрышная серия, false - все проверки прошли и серия не набрана</returns>
-    bool CheckDiagonalUp(char playerChar, int[] lastDot, char[,] field, ref int[,] intField)
-    {
-        int Xmin = lastDot[1] - WinSerie;
-        int Xmax = lastDot[1] + WinSerie;
-        int Ymin = lastDot[0] - WinSerie;
-        int Ymax = lastDot[0] + WinSerie;
-        int counter = 0;
-        for (int i = Ymax, j = Xmin; (i >= Ymin) & (j <= Xmax); i--, j++)
-            if (CheckInRange(in i, in j, field, ref counter, playerChar))
-                return true;
-
-        return false;
-    }
-
-    /// <summary>
-    /// Проверка диагонали Б проходящей через точку отсчёта
-    /// </summary>
-    /// <param name="playerChar">Символ игрока</param>
-    /// <param name="lastDot">Точка отсчёта</param>
-    /// <param name="field">Поле</param>
-    /// <param name="intField">Скрытое поле</param>
-    /// <returns>true - собрана выигрышная серия, false - все проверки прошли и серия не набрана</returns>
-    bool CheckDiagonalDown(char playerChar, int[] lastDot, char[,] field, ref int[,] intField)
-    {
-        int Xmin = lastDot[1] - WinSerie;
-        int Xmax = lastDot[1] + WinSerie;
-        int Ymin = lastDot[0] - WinSerie;
-        int Ymax = lastDot[0] + WinSerie;
-        int counter = 0;
-        for (int i = Ymin, j = Xmin; (i <= Ymax) & (j <= Xmax); i++, j++)
-            if (CheckInRange(in i, in j, in field, ref counter, playerChar))
-                return true;
-
-        return false;
-    }
-
-    /// <summary>
-    /// Проверка горизонтали проходящей через точку отсчёта
-    /// </summary>
-    /// <param name="playerChar">Символ игрока</param>
-    /// <param name="lastDot">Точка отсчёта</param>
-    /// <param name="field">Поле</param>
-    /// <param name="intField">Скрытое поле</param>
-    /// <returns>true - собрана выигрышная серия, false - все проверки прошли и серия не набрана</returns>
-    bool CheckHorizontal(char playerChar, int[] lastDot, char[,] field, ref int[,] intField)
-    {
-        int Xmin = lastDot[1] - WinSerie;
-        int Xmax = lastDot[1] + WinSerie;
-        int counter = 0;
-        for (int i = Xmin; i <= Xmax; i++)
-            if (CheckInRange(in lastDot[0], in i, field, ref counter, playerChar))
-                return true;
-
-        return false;
-    }
-
-    /// <summary>
-    /// Проверка вертикали проходящей через точку отсчёта
-    /// </summary>
-    /// <param name="playerChar">Символ игрока</param>
-    /// <param name="lastDot">Точка отсчёта</param>
-    /// <param name="field">Поле</param>
-    /// <param name="intField">Скрытое поле</param>
-    /// <returns>true - собрана выигрышная серия, false - все проверки прошли и серия не набрана</returns>
-    bool CheckVertical(char playerChar, int[] lastDot, char[,] field, ref int[,] intField)
-    {
-        int Ymin = lastDot[0] - WinSerie;
-        int Ymax = lastDot[0] + WinSerie;
-        int counter = 0;
-        for (int i = Ymin; i <= Ymax; i++)
-            if (CheckInRange(in i, in lastDot[1], field, ref counter, playerChar))
-                return true;
-
-        return false;
-    }
-
-    /// <summary>
-    /// Проверка выигрышной серии.
-    /// </summary>
-    /// <param name="playerChar">Символ игрока</param>
-    /// <param name="lastDot">Координаты точки отсчёта</param>
-    /// <param name="field">Поле</param>
-    /// <param name="intField">Скрытое поле</param>
-    /// <returns>true - собрана выигрышная серия, false - все проверки прошли и серия не набрана</returns>
-    bool WinCheck(char playerChar, int[] lastDot, char[,] field, ref int[,] intField)
-    {
-        bool ver = CheckVertical(playerChar, lastDot, field, ref intField);
-        bool hor = CheckHorizontal(playerChar, lastDot, field, ref intField);
-        bool up = CheckDiagonalUp(playerChar, lastDot, field, ref intField);
-        bool dn = CheckDiagonalDown(playerChar, lastDot, field, ref intField);
-        return ver | hor | up | dn;
-    }
+    #endregion
 }
