@@ -15,7 +15,8 @@ public class HomeWork : MenuSpace.Work
         Draw,
         Break,
         Play,
-        Surender
+        Surender,
+        Exit
     }
 
     /// <summary>
@@ -225,6 +226,7 @@ public class HomeWork : MenuSpace.Work
     {
         if (WinCheck(PlayerChar, last, Field, ref field))
         {
+            Status = GameStatus.Win;
             EndGame(GameStatus.Win, player);
             return true;
         }
@@ -480,9 +482,9 @@ public class HomeWork : MenuSpace.Work
     /// </summary>
     void ExitGame()
     {
-        Status = GameStatus.Break;
         Console.Clear();
         Console.WriteLine("Press Any Key to return in Menu.");
+        Status = GameStatus.Exit;
     }
     
     /// <summary>
@@ -493,7 +495,7 @@ public class HomeWork : MenuSpace.Work
     /// <returns></returns>
     bool EndGame(GameStatus type, string player)
     {
-        Console.SetCursorPosition(Console.WindowWidth / 2, Console.WindowHeight / 2);
+        Console.SetCursorPosition((Console.WindowWidth / 2)-20, Console.WindowHeight / 2);
         switch (type)
         {
             case GameStatus.Win:
