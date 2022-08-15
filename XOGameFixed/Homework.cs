@@ -211,6 +211,7 @@ public class HomeWork : MenuSpace.Work
         Ofield = new int[SizeY, SizeX];
         FillInts(Ofield);
         PrintGreen($"Линия для победы должна быть {WinSerie}".PadRight(SizeX * 2 + 1), 0, SizeY * 2 + 3);
+        Console.SetCursorPosition(1, 1);
     }
 
     /// <summary>
@@ -288,21 +289,19 @@ public class HomeWork : MenuSpace.Work
     /// <param name="Y">Координата Y</param>
     void Selector(int maxX, int maxY, ref char[,] chr, ref int[,] IntField, ref int[,] secondField, char dot, ref int X, ref int Y)
     {
+        PrintWhite(chr[Y, X], Y, X);
         ConsoleKeyInfo key;
         do
         {
             key = Console.ReadKey(true);
             switch (key.Key)
             {
-                case ConsoleKey.Spacebar:
-                    Console.CursorLeft = X == 0 ? 1 : (X * 2 + 1);
-                    Console.CursorTop = Y == 0 ? 1 : (Y * 2 + 1);
-                    Console.BackgroundColor = ConsoleColor.White;
-                    Console.ForegroundColor = ConsoleColor.Black;
-                    Console.Write(IntField[Y, X]);
-                    Console.BackgroundColor = ConsoleColor.Black;
-                    Console.ForegroundColor = ConsoleColor.White;
-                    break;
+                case ConsoleKey.Spacebar: //show intField cell
+                    PrintRed(IntField[Y, X].ToString(), X == 0 ? 1 : (X * 2 + 1), Y == 0 ? 1 : (Y * 2 + 1));
+                    continue;
+                case ConsoleKey.Backspace: //show secondField cell
+                    PrintRed(secondField[Y, X].ToString(), X == 0 ? 1 : (X * 2 + 1), Y == 0 ? 1 : (Y * 2 + 1));
+                    continue;
                 case ConsoleKey.Enter:
                     if (chr[Y, X] == Symbols[0])
                     {
@@ -311,36 +310,34 @@ public class HomeWork : MenuSpace.Work
                     }
                     break;
                 case ConsoleKey.Escape:
+                    Status = GameStatus.Break;
                     ExitGame();
                     break;
                 case ConsoleKey.LeftArrow:
                     PrintBlack(chr[Y, X], Y, X);
                     X = X > 0 ? --X : maxX - 1;
-                    PrintWhite(chr[Y, X], Y, X);
                     break;
                 case ConsoleKey.UpArrow:
                     PrintBlack(chr[Y, X], Y, X);
                     Y = Y > 0 ? --Y : maxY - 1;
-                    PrintWhite(chr[Y, X], Y, X);
                     break;
                 case ConsoleKey.RightArrow:
                     PrintBlack(chr[Y, X], Y, X);
                     X = X < (maxX - 1) ? ++X : 0;
-                    PrintWhite(chr[Y, X], Y, X);
                     break;
                 case ConsoleKey.DownArrow:
                     PrintBlack(chr[Y, X], Y, X);
                     Y = Y < (maxY - 1) ? ++Y : 0;
-                    PrintWhite(chr[Y, X], Y, X);
                     break;
                 default:
                     break;
             }
+        PrintWhite(chr[Y, X], Y, X);
         } while (key.Key != ConsoleKey.Enter & key.Key != ConsoleKey.Escape);
     }
 
     /// <summary>
-    /// Вывод символа на консоль с заданным цветом - Белый текст, чёрный фон
+    /// Вывод символа на консоль с заданным цветом - Чёрный текст, белый фон
     /// </summary>
     /// <param name="chr">символ</param>
     /// <param name="Y">координата Y</param>
@@ -355,7 +352,7 @@ public class HomeWork : MenuSpace.Work
     }
 
     /// <summary>
-    /// Вывод символа на консоль с заданным цветом - Чёрный текст, белый фон
+    /// Вывод символа на консоль с заданным цветом - Белый текст, чёрный фон
     /// </summary>
     /// <param name="chr">символ</param>
     /// <param name="Y">координата Y</param>
@@ -484,7 +481,7 @@ public class HomeWork : MenuSpace.Work
     {
         Console.Clear();
         Console.WriteLine("Press Any Key to return in Menu.");
-        Status = GameStatus.Exit;
+        //Status = GameStatus.Exit;
     }
     
     /// <summary>
